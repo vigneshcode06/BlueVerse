@@ -1,15 +1,15 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $host = "localhost";
-$username = "root";
-$password = "";
-$dbname = "blueverse";
+$user = "root";
+$pass = "";
+$db = "blueverse";
 
-// Create connection
-$conn = new mysqli($host, $username, $password, $dbname);
-
-// Check connection
+$conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
-    die("Database connection failed!");
+    die("Database Connection Failed: " . $conn->connect_error);
 }
 ?>
- 

@@ -60,3 +60,20 @@ button:hover {
         width: 90%;
     }
 }
+.dashboard-container {
+    text-align: center;
+    margin-top: 15%;
+}
+
+h2 {
+    font-size: 2.5em;
+    color: #00AEEF;
+}
+
+.logout {
+    background: red;
+}
+
+.logout:hover {
+    background: darkred;
+}
