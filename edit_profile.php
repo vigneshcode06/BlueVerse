@@ -2,65 +2,38 @@
 session_start();
 include 'config.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
-$msg = "";
-
-// Fetch current user data
-$stmt = $conn->prepare("SELECT username, email, dob, profile_picture FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT full_name, username, bio, profile_picture FROM users WHERE id=?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($username, $email, $dob, $profile_picture);
+$stmt->bind_result($full_name, $username, $bio, $profile_picture);
 $stmt->fetch();
 $stmt->close();
 
-// Handle profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $new_username = $_POST['username'];
-    $new_email = $_POST['email'];
-    $new_dob = $_POST['dob'];
+    $full_name = $_POST['full_name'];
+    $bio = $_POST['bio'];
+    $new_profile_picture = $profile_picture;
 
-    // Handle profile picture upload
     if (!empty($_FILES["profile_picture"]["name"])) {
         $target_dir = "uploads/";
-        
-        // Create directory if not exists
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
-
-        $target_file = $target_dir . basename($_FILES["profile_picture"]["name"]);
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-        // Allowed file types
-        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
-
-        if (in_array($imageFileType, $allowed_types)) {
-            if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
-                $profile_picture = basename($_FILES["profile_picture"]["name"]);
-            } else {
-                $msg = "Error uploading file!";
-            }
-        } else {
-            $msg = "Invalid file type! Only JPG, JPEG, PNG & GIF allowed.";
-        }
+        $new_profile_picture = $target_dir . basename($_FILES["profile_picture"]["name"]);
+        move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $new_profile_picture);
     }
 
-    // Update user data in the database
-    $stmt = $conn->prepare("UPDATE users SET username=?, email=?, dob=?, profile_picture=? WHERE id=?");
-    $stmt->bind_param("ssssi", $new_username, $new_email, $new_dob, $profile_picture, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET full_name=?, bio=?, profile_picture=? WHERE id=?");
+    $stmt->bind_param("sssi", $full_name, $bio, $new_profile_picture, $user_id);
 
     if ($stmt->execute()) {
-        $msg = "Profile updated successfully!";
+        echo "<script>alert('Profile updated successfully!'); window.location='profile.php';</script>";
     } else {
-        $msg = "Error updating profile.";
+        echo "<script>alert('Error updating profile.');</script>";
     }
-
     $stmt->close();
 }
 ?>
@@ -68,32 +41,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Edit Profile</title>
+    <title>Edit Profile | BlueVerse</title>
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-    <h2>Edit Profile</h2>
-    <p style="color:red;"><?php echo $msg; ?></p>
-    
-    <form action="" method="POST" enctype="multipart/form-data">
-        <label>Username:</label>
-        <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" required><br>
+    <div class="container">
+        <h2>Edit Profile</h2>
+        <form action="" method="POST" enctype="multipart/form-data">
+            <input type="text" name="full_name" value="<?php echo $full_name; ?>" required>
+            <textarea name="bio" placeholder="Your Bio"><?php echo $bio; ?></textarea>
 
-        <label>Email:</label>
-        <input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required><br>
+            <label>Profile Picture</label>
+            <input type="file" id="profilePicInput" name="profile_picture" accept="image/*">
+            <img id="profilePicPreview" src="<?php echo $profile_picture; ?>" alt="Profile Picture" class="profile-pic">
 
-        <label>Date of Birth:</label>
-        <input type="date" name="dob" value="<?php echo htmlspecialchars($dob); ?>" required><br>
+            <button type="submit">Update Profile</button>
+        </form>
+    </div>
 
-        <label>Profile Picture:</label>
-        <input type="file" name="profile_picture"><br>
-        <?php if ($profile_picture) : ?>
-            <img src="uploads/<?php echo $profile_picture; ?>" width="100"><br>
-        <?php endif; ?>
-
-        <button type="submit">Update Profile</button>
-    </form>
-    
-    <br>
-    <a href="dashboard.php">Back to Dashboard</a>
+    <script>
+        document.getElementById("profilePicInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById("profilePicPreview").src = URL.createObjectURL(file);
+            }
+        });
+    </script>
 </body>
 </html>

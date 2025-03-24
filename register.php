@@ -2,11 +2,19 @@
 include 'config.php';
 
 if (isset($_POST['register'])) {
-    $full_name = $_POST['full_name'];
-    $username = $_POST['username'];
-    $email = $_POST['email'];
+    $full_name = trim($_POST['full_name']);
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $dob = $_POST['dob'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $password = $_POST['password'];
+
+    // Validate password (at least 8 chars, 1 letter, 1 number)
+    if (!preg_match("/^(?=.*[A-Za-z])(?=.*\d).{8,}$/", $password)) {
+        die("<script>alert('Password must be at least 8 characters long and include at least one letter and one number.'); window.history.back();</script>");
+    }
+
+    // Hash password securely
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     // Check if username or email already exists
     $checkUser = $conn->prepare("SELECT id FROM users WHERE username=? OR email=?");
@@ -15,16 +23,16 @@ if (isset($_POST['register'])) {
     $checkUser->store_result();
 
     if ($checkUser->num_rows > 0) {
-        echo "<script>alert('Username or Email already exists!');</script>";
+        echo "<script>alert('Username or Email already exists!'); window.history.back();</script>";
     } else {
-        // Insert new user
+        // Insert new user into database
         $stmt = $conn->prepare("INSERT INTO users (full_name, username, email, dob, password) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $full_name, $username, $email, $dob, $password);
+        $stmt->bind_param("sssss", $full_name, $username, $email, $dob, $hashed_password);
 
         if ($stmt->execute()) {
             echo "<script>alert('Registration successful! Please login.'); window.location='login.php';</script>";
         } else {
-            echo "<script>alert('Registration failed! Try again.');</script>";
+            echo "<script>alert('Registration failed! Try again.'); window.history.back();</script>";
         }
         $stmt->close();
     }
@@ -50,4 +58,3 @@ if (isset($_POST['register'])) {
     </form>
 </body>
 </html>
-

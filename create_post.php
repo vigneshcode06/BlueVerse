@@ -1,48 +1,71 @@
 <?php
 session_start();
+include 'config.php';
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-include 'config.php';
-
-if (isset($_POST['submit'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = $_POST['title'];
     $content = $_POST['content'];
     $user_id = $_SESSION['user_id'];
 
-    $image = "";
-    if (!empty($_FILES["image"]["name"])) {
-        $image = "uploads/" . basename($_FILES["image"]["name"]);
-        move_uploaded_file($_FILES["image"]["tmp_name"], $image);
+    $stmt = $conn->prepare("INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)");
+    $stmt->bind_param("iss", $user_id, $title, $content);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Post Created Successfully!'); window.location='dashboard.php';</script>";
+    } else {
+        echo "<script>alert('Error creating post.');</script>";
     }
 
-    $stmt = $conn->prepare("INSERT INTO posts (user_id, title, content, image) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $user_id, $title, $content, $image);
-    $stmt->execute();
     $stmt->close();
-
-    echo "<script>alert('Post Created!'); window.location='view_posts.php';</script>";
 }
 ?>
+
+<textarea id="postContent" name="content" placeholder="Write your post..." required></textarea>
+<p>Word Count: <span id="wordCount">0</span></p>
+
+<script>
+    const postContent = document.getElementById("postContent");
+
+    // Load saved draft
+    postContent.value = localStorage.getItem("draft") || "";
+
+    // Save draft automatically
+    postContent.addEventListener("input", function () {
+        localStorage.setItem("draft", postContent.value);
+        
+        let words = this.value.trim().split(/\s+/).filter(word => word.length > 0);
+        document.getElementById("wordCount").innerText = words.length;
+    });
+</script>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Create Post</title>
+    <title>Create Post | BlueVerse</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
     <div class="container">
         <h2>Create a New Post</h2>
-        <form action="" method="POST" enctype="multipart/form-data">
-            <input type="text" name="title" placeholder="Post Title" required><br>
-            <textarea name="content" placeholder="Write your post..." required></textarea><br>
-            <input type="file" name="image"><br>
-            <button type="submit" name="submit">Publish</button>
+        <form action="" method="POST">
+            <input type="text" name="title" placeholder="Post Title" required>
+            <textarea id="postContent" name="content" placeholder="Write your post..." required></textarea>
+            <p>Word Count: <span id="wordCount">0</span></p>
+            <button type="submit">Post</button>
         </form>
-        <a href="dashboard.php">Back to Dashboard</a>
     </div>
+
+    <script>
+        document.getElementById("postContent").addEventListener("input", function () {
+            let words = this.value.trim().split(/\s+/).filter(word => word.length > 0);
+            document.getElementById("wordCount").innerText = words.length;
+        });
+    </script>
 </body>
 </html>
