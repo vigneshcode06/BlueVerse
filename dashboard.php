@@ -14,6 +14,7 @@ $username = $_SESSION['username'];
 <html lang="en">
 <head>
     <title>Dashboard</title>
+    <link rel="icon"  href="tab.png">
     <style>
         body {
             background-color: #0a0f1f;
@@ -56,7 +57,8 @@ $username = $_SESSION['username'];
 
     <div class="container">
         <h2 class="welcome">Welcome, <span style="color: #0074cc;"><?php echo htmlspecialchars($username); ?></span>🙋‍♂️</h2>
-        <p>Start writing amazing blog posts! 🚀</p>
+        <p> I built a test site to learn and exploit authentication flaws like session fixation, broken session management, and cache-based authentication bypass etc  🚀</p>
+        <p> This is a test site for educational purposes only, not a real platform</p>
     </div>
 </body>
 </html>
