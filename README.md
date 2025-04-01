@@ -1,6 +1,6 @@
 # 🚀 BlueVerse – The Ultimate Blogging Platform  
 
-![BlueVerse Banner](https://via.placeholder.com/1000x300?text=BlueVerse+-+Blogging+Redefined)  
+
 
 **BlueVerse** is a modern, **blue & black-themed** blogging platform with a sleek UI, built with **PHP, MySQL, HTML, CSS, and JavaScript**. It provides users with an immersive experience to **write, share, and interact** with blog posts.  
 
