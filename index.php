@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <title>Welcome to BlueVerse</title>
-    <link rel="icon"  href="tab.png">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>

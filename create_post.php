@@ -48,8 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <title>Create Post | BlueVerse</title>
-    <link rel="icon"  href="tab.png">
- 
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>

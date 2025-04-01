@@ -28,7 +28,6 @@ if (isset($_POST['add_post'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/png" href="C:\xampp\htdocs\web\BlueVerse\assets\tab.png">
     <title>Add Post</title>
 </head>
 <body>

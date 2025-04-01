@@ -44,7 +44,6 @@ if (isset($_POST['register'])) {
 <html lang="en">
 <head>
     <title>Register | BlueVerse</title>
-    <link rel="icon"  href="tab.png">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>

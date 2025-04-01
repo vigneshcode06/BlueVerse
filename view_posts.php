@@ -12,7 +12,6 @@ $result = $conn->query("SELECT posts.id, posts.title, posts.content, posts.image
 <html lang="en">
 <head>
     <title>View Posts</title>
-    <link rel="icon"  href="tab.png">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
