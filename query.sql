@@ -34,3 +34,12 @@ CREATE TABLE comments (
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+-- Select your database (replace `blueverse` with your actual DB name if different)
+USE blueverse;
+
+-- Check if 'bio' column exists first (optional for safety)
+-- Then add the column only if it doesn't exist (MySQL 8+)
+ALTER TABLE users 
+ADD COLUMN bio TEXT AFTER username;
